@@ -1,0 +1,110 @@
+country_id,country,population
+1,Afghanistan,22720000
+2,Algeria,31471000
+3,"American Samoa",68000
+4,Angola,12878000
+5,Anguilla,8000
+6,Argentina,37032000
+7,Armenia,3520000
+8,Australia,18886000
+9,Austria,8091800
+10,Azerbaijan,7734000
+11,Bahrain,617000
+12,Bangladesh,129155000
+13,Belarus,10236000
+14,Bolivia,8329000
+15,Brazil,170115000
+16,Brunei,328000
+17,Bulgaria,8190900
+18,Cambodia,11168000
+19,Cameroon,15085000
+20,Canada,31147000
+21,Chad,7651000
+22,Chile,15211000
+23,China,1277558000
+24,Colombia,42321000
+25,"Congo, The Democratic Republic of the",51654000
+26,"Czech Republic",10278100
+27,"Dominican Republic",8495000
+28,Ecuador,12646000
+29,Egypt,68470000
+30,Estonia,1439200
+31,Ethiopia,62565000
+32,"Faroe Islands",43000
+33,Finland,5171300
+34,France,59225700
+35,"French Guiana",181000
+36,"French Polynesia",235000
+37,Gambia,1305000
+38,Germany,82164700
+39,Greece,10545700
+40,Greenland,56000
+41,"Holy See (Vatican City State)",1000
+42,"Hong Kong",6782000
+43,Hungary,10043200
+44,India,1013662000
+45,Indonesia,212107000
+46,Iran,67702000
+47,Iraq,23115000
+48,Israel,6217000
+49,Italy,57680000
+50,Japan,126714000
+51,Kazakstan,16223000
+52,Kenya,30080000
+53,Kuwait,1972000
+54,Latvia,2424200
+55,Liechtenstein,32300
+56,Lithuania,3698500
+57,Madagascar,15942000
+58,Malawi,10925000
+59,Malaysia,22244000
+60,Mexico,98881000
+61,Moldova,4380000
+62,Morocco,28351000
+63,Mozambique,19680000
+64,Myanmar,45611000
+65,Nauru,12000
+66,Nepal,23930000
+67,Netherlands,15864000
+68,"New Zealand",3862000
+69,Nigeria,111506000
+70,"North Korea",24039000
+71,Oman,2542000
+72,Pakistan,156483000
+73,Paraguay,5496000
+74,Peru,25662000
+75,Philippines,75967000
+76,Poland,38653600
+77,"Puerto Rico",3869000
+78,Romania,22455500
+79,Réunion,699000
+80,"Russian Federation",146934000
+81,"Saint Vincent and the Grenadines",114000
+82,"Saudi Arabia",21607000
+83,Senegal,9481000
+84,Slovakia,5398700
+85,"South Africa",40377000
+86,"South Korea",46844000
+87,Spain,39441700
+88,"Sri Lanka",18827000
+89,Sudan,29490000
+90,Sweden,8861400
+91,Switzerland,7160400
+92,Taiwan,22256000
+93,Tanzania,33517000
+94,Thailand,61399000
+95,Tonga,99000
+96,Tunisia,9586000
+97,Turkey,66591000
+98,Turkmenistan,4459000
+99,Tuvalu,12000
+100,Ukraine,50456000
+101,"United Arab Emirates",2441000
+102,"United Kingdom",59623400
+103,"United States",278357000
+104,Venezuela,24170000
+105,Vietnam,79832000
+106,"Virgin Islands, U.S.",93000
+107,Yemen,18112000
+108,Yugoslavia,10640000
+109,Zambia,9169000
