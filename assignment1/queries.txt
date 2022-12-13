@@ -1,0 +1,193 @@
+-- q1: to show that there are only 2006-year films in this database
+SELECT DISTINCT(release_year) FROM sakila.film;
+
+
+-- q2: to show that there are only English films in this database
+SELECT DISTINCT(language_id) FROM sakila.film;
+
+
+-- q3: to show that there is no non-NULL value in this column
+SELECT DISTINCT(original_language_id) FROM sakila.film;
+
+
+-- q4: to show that there is only two stores, and each one is managed by each one of the staffs
+SELECT * FROM sakila.store;
+
+
+-- q5: to add the attribute population to countries importing this information from another database
+ALTER TABLE sakila.country ADD COLUMN population INT;
+
+
+UPDATE sakila.country t1
+INNER JOIN world.country t2 ON t1.country = t2.Name 
+SET t1.population = t2.Population;
+
+
+-- q6: removing redundant data and joining and creating new tables based on the new ERD.
+ALTER TABLE sakila.actor
+DROP COLUMN last_update;
+
+ALTER TABLE sakila.customer add COLUMN country_id SMALLINT UNSIGNED;
+
+UPDATE sakila.customer
+INNER JOIN sakila.address ON sakila.customer.address_id = sakila.address.address_id
+INNER JOIN sakila.city ON sakila.city.city_id=sakila.address.city_id
+SET sakila.customer.country_id = sakila.city.country_id;
+
+ALTER TABLE sakila.inventory
+DROP COLUMN last_update,
+ADD COLUMN customer_id SMALLINT UNSIGNED,
+ADD COLUMN rental_date DATETIME;
+
+UPDATE sakila.inventory
+INNER JOIN sakila.rental ON sakila.inventory.inventory_id=sakila.rental.inventory_id
+SET sakila.inventory.customer_id=sakila.rental.customer_id, sakila.inventory.rental_date=sakila.rental.rental_date;
+
+ALTER TABLE sakila.inventory
+ADD CONSTRAINT fk_inventory_customer
+FOREIGN KEY (customer_id) REFERENCES sakila.customer(customer_id);
+
+ALTER TABLE sakila.customer
+ADD CONSTRAINT fk_customer_country
+FOREIGN KEY (country_id) REFERENCES sakila.country(country_id);
+
+ALTER TABLE skila.address
+DROP CONSTRAINT fk_address_city;
+
+ALTER TABLE sakila.customer
+DROP CONSTRAINT fk_customer_store,
+DROP CONSTRAINT fk_customer_address;
+
+ALTER TABLE sakila.customer
+DROP COLUMN last_update,
+DROP COLUMN create_date,
+DROP COLUMN active,
+DROP COLUMN address_id,
+DROP COLUMN email,
+DROP COLUMN store_id;
+
+ALTER TABLE sakila.country
+DROP COLUMN last_update;
+
+ALTER TABLE sakila.city
+DROP CONSTRAINT fk_city_country;
+
+ALTER TABLE sakila.film
+DROP CONSTRAINT fk_film_language,
+DROP CONSTRAINT fk_film_language_original;
+
+ALTER TABLE sakila.staff
+DROP CONSTRAINT fk_staff_address,
+DROP CONSTRAINT fk_staff_store;
+
+ALTER TABLE sakila.store
+DROP CONSTRAINT fk_store_address,
+DROP CONSTRAINT fk_store_staff;
+
+ALTER TABLE sakila.payment
+DROP CONSTRAINT fk_payment_customer,
+DROP CONSTRAINT fk_payment_rental,
+DROP CONSTRAINT fk_payment_staff;
+
+ALTER TABLE sakila.film
+DROP COLUMN description,
+DROP COLUMN release_year,
+DROP COLUMN language_id,
+DROP COLUMN original_language_id,
+DROP COLUMN rental_duration,
+DROP COLUMN rental_rate,
+DROP COLUMN length,
+DROP COLUMN replacement_cost,
+DROP COLUMN rating,
+DROP COLUMN special_features,
+DROP COLUMN last_update;
+
+ALTER TABLE sakila.inventory 
+DROP CONSTRAINT fk_inventory_store,
+RENAME COLUMN store_id TO staff_id;
+
+ALTER TABLE sakila.rental
+DROP CONSTRAINT fk_rental_customer,
+DROP CONSTRAINT fk_rental_inventory,
+DROP CONSTRAINT fk_rental_staff;
+
+ALTER TABLE sakila.film_actor
+DROP COLUMN last_update;
+
+ALTER TABLE sakila.film_category
+DROP COLUMN last_update;
+
+ALTER TABLE sakila.category
+DROP COLUMN last_update;
+
+DROP TABLE sakila.address, sakila.payment, sakila.language, sakila.city, sakila.film_text, sakila.staff, sakila.store, sakila.rental;
+
+-- q7: exporting CSV files from the current databases
+-- I queried SELECT for each table and then saved it as CSV files in "import" folder of the neo4j project, and the load it at neo4j via the following queries
+LOAD CSV WITH HEADERS FROM 'file:///actor.csv' as row with row where row.actor_id is not NULL
+MERGE (:ACTOR {id:row.actor_id, first_name:row.first_name, last_name:row.last_name})
+
+LOAD CSV WITH HEADERS FROM 'file:///category.csv' as row with row where row.category_id is not NULL
+MERGE (:CATEGORY {id:row.category_id, name:row.name})
+
+LOAD CSV WITH HEADERS FROM 'file:///country.csv' as row with row where row.country_id is not NULL
+MERGE (:COUNTRY {id:row.country_id, name:row.country, population:row.population})
+
+LOAD CSV WITH HEADERS FROM 'file:///customers.csv' as row with row where row.customer_id is not NULL
+MERGE (:CUSTOMER {id:row.customer_id, first_name:row.first_name, lastname:row.last_name})
+
+LOAD CSV WITH HEADERS FROM 'file:///film.csv' as row with row where row.film_id is not NULL
+MERGE (:FILM {id:row.film_id, title:row.title})
+
+LOAD CSV WITH HEADERS FROM 'file:///film_actor.csv' as row with row where row.actor_id is not NULL
+match (a:ACTOR {id:row.actor_id}), (b:FILM {id:row.film_id})
+MERGE (a)-[:ACTED_IN]->(b)
+
+LOAD CSV WITH HEADERS FROM 'file:///film_category.csv' as row with row where row.category_id is not NULL
+match (a:CATEGORY {id:row.category_id}), (b:FILM {id:row.film_id})
+MERGE (b)-[:HAS]->(a)
+
+LOAD CSV WITH HEADERS FROM 'file:///film_inventory.csv' as row with row where row.inventory_id is not NULL
+match (a:FILM {id:row.film_id}), (b:CUSTOMER {id:row.customer_id})
+MERGE (b)-[:RENTED {rental_date:row.rental_date, staff_id:row.staff_id}]->(a)
+
+MATCH (n)
+REMOVE n.id
+
+-- q8: data exploration 1a.
+MATCH (:CUSTOMER)-[r1:RENTED {staff_id:'1'}]->(:FILM), (:CUSTOMER)-[r2:RENTED {staff_id:'2'}]->(:FILM)
+RETURN count(DISTINCT r1), count(DISTINCT r2)
+
+-- q9: data exploration 1b.
+MATCH (c:CUSTOMER)-[r1:RENTED {staff_id:'1'}]->(:FILM),(c)-[r2:RENTED {staff_id:'2'}]->(:FILM)
+RETURN count(DISTINCT r1),count(DISTINCT r2)
+
+-- q10: data exploration 1c.
+MATCH (c:CATEGORY)<--(f:FILM)<-[r:RENTED {staff_id:'1'}]-(:CUSTOMER)
+RETURN c.name,count(DISTINCT r) as n
+ORDER BY n DESC
+LIMIT 5
+
+MATCH (c:ACTOR)-[:ACTED_IN]->(f:FILM)<-[r:RENTED {staff_id:'1'}]-(:CUSTOMER)
+RETURN c.first_name+" "+c.last_name as name, count(DISTINCT r) as n
+ORDER BY n DESC
+LIMIT 5
+
+
+-- q11: data exploration 2.
+MATCH (c:CATEGORY)<-[:HAS]-(:FILM)<-[r:RENTED]-(:CUSTOMER)
+WHERE 12<=toInteger(substring(r.rental_date,11,2))<18
+RETURN count(r), c.name as n
+ORDER BY n DESC
+
+-- q12: data exploration 3.
+MATCH (c:CUSTOMER)-->(f1:FILM)<--(a:ACTOR)-->(f2:FILM)<--(c)
+WHERE f1<>f2
+RETURN count(distinct c)
+
+MATCH (c:CUSTOMER)-->(f1:FILM)<--(a:ACTOR)-->(f2:FILM)<--(c)-->(f3:FILM)<--(a)
+WHERE f1<>f2 AND f1<>f3 AND f2<>f3
+RETURN count(distinct c)
+
+MATCH (c:CUSTOMER) Return count(c)
+
